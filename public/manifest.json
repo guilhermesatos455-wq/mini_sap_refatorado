@@ -1,0 +1,16 @@
+{
+  "name": "Meu Mini SAP Web Auditoria",
+  "short_name": "MiniSAP",
+  "description": "Sistema Enterprise de Auditoria Contábil, Reconciliação CKM3/MB51 e Geração de IDocs",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#8DC63F",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "64x64 32x32 24x24 16x16",
+      "type": "image/x-icon"
+    }
+  ]
+}

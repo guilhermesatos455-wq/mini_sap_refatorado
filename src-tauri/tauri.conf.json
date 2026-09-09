@@ -1,0 +1,52 @@
+{
+  "productName": "Mini SAP Auditor",
+  "version": "1.2.0",
+  "identifier": "com.mini-sap.auditor",
+  "build": {
+    "distDir": "../dist",
+    "devPath": "http://localhost:3000"
+  },
+  "bundle": {
+    "active": true,
+    "targets": "all",
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ]
+  },
+  "app": {
+    "windows": [
+      {
+        "fullscreen": false,
+        "height": 768,
+        "resizable": true,
+        "title": "Mini SAP Auditor",
+        "width": 1024,
+        "minHeight": 600,
+        "minWidth": 800
+      }
+    ]
+  },
+  "trayIcon": {
+    "iconPath": "icons/icon.ico",
+    "iconAsTemplate": true,
+    "menuOnLeftClick": true
+  },
+  "updater": {
+    "active": true,
+    "endpoints": [
+      "https://releases.mini-sap.com/{{target}}/{{current_version}}"
+    ],
+    "dialog": true,
+    "pubkey": "..."
+  },
+  "security": {
+    "csp": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; connect-src 'self' http://localhost:3000 https://apis.google.com;"
+  },
+  "capabilities": [
+    "capabilities/default.json"
+  ]
+}

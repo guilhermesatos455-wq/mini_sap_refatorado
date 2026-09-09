@@ -1,0 +1,33 @@
+@import "tailwindcss";
+
+@theme {
+  --color-brand-green: #8DC63F;
+  --color-brand-light: #F9FFF0;
+}
+
+:root, body {
+  --bg-card: #ffffff;
+  --text-color: #0f172a;
+  --bg-main: #f8fafc;
+  --border-color: #e2e8f0;
+}
+
+body.dark, body.dark-theme, .dark, .dark-theme {
+  --bg-card: #1e293b;
+  --text-color: #f8fafc;
+  --bg-main: #0f172a;
+  --border-color: #334155;
+}
+
+#root > div > main > div > div > div:nth-child(2) > div,
+body.dark #root > div > main > div > div > div:nth-child(2) > div,
+body.dark-theme #root > div > main > div > div > div:nth-child(2) > div {
+  border: 1px solid var(--border-color);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  background-color: var(--bg-card);
+  color: var(--text-color);
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+}
+
+
