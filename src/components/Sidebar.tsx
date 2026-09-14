@@ -20,13 +20,29 @@ import {
   ShieldCheck,
   Bell,
   FileSpreadsheet,
-  Sliders
+  Sliders,
+  TrendingUp,
+  ShieldAlert,
+  FileSearch,
+  Database,
+  GitPullRequest,
+  Cpu,
+  LayoutGrid,
+  Warehouse,
+  Wrench,
+  Scale,
+  QrCode,
+  Globe2
 } from 'lucide-react';
 import Logo from './Logo';
 import { useAudit } from '../context/AuditContext';
+import { useAuth } from '../context/AuthContext';
 
 const Sidebar: React.FC = React.memo(() => {
-  const { darkMode, setDarkMode, branding, showMaterialsPMM, showRecipes, showMovements, showPriceSimulator, showApprovalSign, showSapIdocGenerator, showSoxAudit, showAccountingSimulator, showWebhookAlerts, showOfficeIntegration, userLevel } = useAudit();
+  const { darkMode, setDarkMode, branding, showMaterialsPMM, showRecipes, showMovements, showPriceSimulator, showSapIdocGenerator, showSoxAudit, showAccountingSimulator, showWebhookAlerts, showOfficeIntegration, userLevel } = useAudit();
+  const { user } = useAuth();
+
+  const isDevAuthorized = userLevel === 0 || user?.email?.toLowerCase() === 'guilhermesatos455@gmail.com';
 
   const navigation = useMemo(() => [
     {
@@ -40,29 +56,70 @@ const Sidebar: React.FC = React.memo(() => {
         ...(userLevel === 0 ? [{ to: '/sox-audit', icon: <ShieldCheck className="w-4 h-4" />, label: 'Trilha SOX' }] : []),
       ]
     },
-    {
-      title: 'Inteligência de Custos',
+    ...(isDevAuthorized ? [{
+      title: 'Inteligência de Custos (Beta)',
       items: [
-        ...(showApprovalSign ? [{ to: '/approval', icon: <FileSignature className="w-4 h-4" />, label: 'Assinatura C-Level' }] : []),
-        ...(showRecipes ? [{ to: '/recipes', icon: <ScrollText className="w-4 h-4" />, label: 'Receitas (Regras)' }] : []),
+        { 
+          to: '/cost-intelligence', 
+          icon: <TrendingUp className="w-4 h-4" />, 
+          label: 'Hub Inteligência de Custos',
+          badge: 'BETA'
+        },
+        { 
+          to: '/audit-copilot', 
+          icon: <Bot className="w-4 h-4" />, 
+          label: 'Copilot de Auditoria & CFO',
+          badge: 'IA'
+        },
+        { 
+          to: '/executive-dossier', 
+          icon: <FileSpreadsheet className="w-4 h-4" />, 
+          label: 'Dossiê Executivo & SPED',
+          badge: 'SOX'
+        },
+        { 
+          to: '/risk-matrix', 
+          icon: <ShieldAlert className="w-4 h-4" />, 
+          label: 'Matriz de Risco ERM (COSO)',
+          badge: 'ISO'
+        },
+        { 
+          to: '/tax-reform', 
+          icon: <Scale className="w-4 h-4" />, 
+          label: 'Reforma Tributária (IBS/CBS)',
+          badge: 'NOVO'
+        },
+        { 
+          to: '/traceability', 
+          icon: <QrCode className="w-4 h-4" />, 
+          label: 'Rastreabilidade Serial (SNCM)',
+          badge: 'ANVISA'
+        },
+        { 
+          to: '/transfer-pricing', 
+          icon: <Globe2 className="w-4 h-4" />, 
+          label: 'Preços de Transferência',
+          badge: 'OCDE'
+        },
       ]
-    },
+    }] : []),
     {
       title: 'Logística SAP',
       items: [
         ...(showMovements ? [{ to: '/movements', icon: <RefreshCcw className="w-4 h-4" />, label: 'Movimentações (MB51)' }] : []),
-        {to: '/ckm-mb51-simulator', icon: <Calculator className="w-4 h-4" />, label: 'Central de Simuladores SAP' },
+        { to: '/ckm-mb51-simulator', icon: <Calculator className="w-4 h-4" />, label: 'Central de Simuladores SAP' },
+        { to: '/warehouse-system', icon: <Warehouse className="w-4 h-4" />, label: 'WMS & Armazém Moderno' },
       ]
     },
     {
       title: 'Sistema',
       items: [
-        { to: '/office-integration', icon: <FileSpreadsheet className="w-4 h-4" />, label: 'Office & Power BI' },
+        { to: '/studio-mode', icon: <Wrench className="w-4 h-4" />, label: 'Modo Estúdio (No-Code & IA)' },
         { to: '/settings', icon: <Settings className="w-4 h-4" />, label: 'Configurações' },
         { to: '/help', icon: <HelpCircle className="w-4 h-4" />, label: 'Suporte & Guia' },
       ]
     }
-  ], [showMaterialsPMM, showRecipes, showMovements, showPriceSimulator, showApprovalSign, showSapIdocGenerator, showSoxAudit, showAccountingSimulator, showWebhookAlerts, showOfficeIntegration, userLevel]);
+  ], [showMaterialsPMM, showMovements, showPriceSimulator, showSapIdocGenerator, showSoxAudit, showAccountingSimulator, showWebhookAlerts, showOfficeIntegration, userLevel, isDevAuthorized]);
 
   return (
     <aside className={`hidden md:flex w-64 flex-shrink-0 border-r transition-all duration-300 flex flex-col ${darkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-gray-200 shadow-xl'}`}>
@@ -93,15 +150,26 @@ const Sidebar: React.FC = React.memo(() => {
                     key={item.to}
                     to={item.to}
                     className={({ isActive }) => `
-                      flex items-center gap-3 px-4 py-2.5 rounded-xl text-xs font-bold transition-all duration-200
+                      flex items-center justify-between px-4 py-2.5 rounded-xl text-xs font-bold transition-all duration-200
                       ${isActive 
                         ? (darkMode ? 'bg-[#8DC63F]/10 text-[#8DC63F]' : 'bg-[#8DC63F] text-white shadow-lg shadow-[#8DC63F]/20')
                         : (darkMode ? 'text-slate-400 hover:bg-slate-800/50 hover:text-slate-100' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900')
                       }
                     `}
                   >
-                    <span>{item.icon}</span>
-                    {item.label}
+                    <div className="flex items-center gap-3 min-w-0">
+                      <span>{item.icon}</span>
+                      <span className="truncate">{item.label}</span>
+                    </div>
+                    {(item as any).badge && (
+                      <span className={`px-1.5 py-0.5 rounded text-[9px] font-black uppercase tracking-wider ${
+                        (item as any).badge === 'BETA'
+                          ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30 shadow-sm'
+                          : 'bg-purple-500/20 text-purple-400 border border-purple-500/30'
+                      }`}>
+                        {(item as any).badge}
+                      </span>
+                    )}
                   </NavLink>
                 ))}
               </div>

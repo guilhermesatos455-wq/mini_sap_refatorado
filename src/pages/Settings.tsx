@@ -34,7 +34,20 @@ import {
   AlertTriangle,
   Cpu,
   Shield,
-  Database
+  Database,
+  ScrollText,
+  Sliders,
+  Compass,
+  ShieldAlert,
+  Server,
+  BarChart3,
+  Ticket,
+  FileSpreadsheet,
+  Cloud,
+  FolderLock,
+  FolderOpen,
+  Search,
+  Building2
 } from 'lucide-react';
 import { useAudit } from '../context/AuditContext';
 import { Link } from 'react-router-dom';
@@ -46,10 +59,31 @@ import { getPowerBiStatus, pushDataToPowerBi, verifyPowerBiConnection, PowerBiSe
 import { LogTerminal } from '../components/LogTerminal';
 import { TenantManager } from '../components/TenantManager';
 import { EnterpriseAnalyticsDashboard } from '../components/EnterpriseAnalyticsDashboard';
+import { AiModelToggleManager } from '../components/AiModelToggleManager';
 import { GeminiAiAnomalyAnalyzer } from '../components/GeminiAiAnomalyAnalyzer';
 import { RealTimeNotificationsCenter } from '../components/RealTimeNotificationsCenter';
 import { AuditLogsManager } from '../components/AuditLogsManager';
 import { SupabaseAdvancedManager } from '../components/SupabaseAdvancedManager';
+import RecipesPage from './Recipes';
+import { SapReportBuilder } from '../components/SapReportBuilder';
+import { SapReferenceLibrary } from '../components/SapReferenceLibrary';
+import { SapDataDictionary } from '../components/SapDataDictionary';
+import { SapAuditHub } from '../components/SapAuditHub';
+import { DebugLogMonitor } from '../components/DebugLogMonitor';
+import { SapConnectionManager } from '../components/SapConnectionManager';
+import { SapAnalyticsDashboard } from '../components/SapAnalyticsDashboard';
+import { SapTerminal } from '../components/SapTerminal';
+import { SapTicketManager } from '../components/SapTicketManager';
+import { BrazilianTaxMatrix } from '../components/BrazilianTaxMatrix';
+import { SapCloudExportManager } from '../components/SapCloudExportManager';
+import { LocalEncryptedBackup } from '../components/LocalEncryptedBackup';
+import { ImmutableAuditLog } from '../components/ImmutableAuditLog';
+import { ExecutiveSlideshowModal } from '../components/ExecutiveSlideshowModal';
+import OfficeIntegrationPage from './OfficeIntegration';
+import { SapVersionConnectionManager } from '../components/SapVersionConnectionManager';
+import { FileSystemBackupManager } from '../components/FileSystemBackupManager';
+import { St05TraceSimulator } from '../components/St05TraceSimulator';
+import IntercompanyConsolidation from '../components/IntercompanyConsolidation';
 
 const SettingsPage: React.FC = () => {
     const { 
@@ -69,6 +103,7 @@ const SettingsPage: React.FC = () => {
     finalStockPositions,
     notificationSettings, setNotificationSettings,
     showFinancialImpact, setShowFinancialImpact,
+    resultado,
     showExecutiveSummary, setShowExecutiveSummary,
     showMaterialsPMM, setShowMaterialsPMM,
     showRpaAutomation, setShowRpaAutomation,
@@ -77,7 +112,6 @@ const SettingsPage: React.FC = () => {
     showBranding, setShowBranding,
     showTaxMatrix, setShowTaxMatrix,
     showPriceSimulator, setShowPriceSimulator,
-    showApprovalSign, setShowApprovalSign,
     showSapIdocGenerator, setShowSapIdocGenerator,
     showSoxAudit, setShowSoxAudit,
     showAccountingSimulator, setShowAccountingSimulator,
@@ -108,7 +142,9 @@ const SettingsPage: React.FC = () => {
   const [localShowExecutiveSummary, setLocalShowExecutiveSummary] = useState(showExecutiveSummary);
   const [localTaxMatrix, setLocalTaxMatrix] = useState(taxMatrix);
   const [showSuccess, setShowSuccess] = useState(false);
-  const [activeTab, setActiveTab] = useState<'geral' | 'mapeamento' | 'tolerancia' | 'alertas' | 'integracoes' | 'terminal' | 'idoc' | 'tenants' | 'analytics' | 'ai' | 'realtime' | 'auditlogs' | 'supabase-adv'>('geral');
+  const [activeTab, setActiveTab] = useState<'geral' | 'mapeamento' | 'tolerancia' | 'alertas' | 'integracoes' | 'terminal' | 'idoc' | 'tenants' | 'analytics' | 'ai' | 'ai-models' | 'realtime' | 'auditlogs' | 'supabase-adv' | 'receitas' | 'sap-report' | 'sap-reference' | 'sap-dictionary' | 'sap-audit' | 'debug-logs' | 'sap-conn' | 'sap-analytics' | 'sap-cli' | 'sap-tickets' | 'sap-tax' | 'sap-cloud' | 'sap-local-backup' | 'sap-immutable-audit' | 'sap-s4hana-versions' | 'sap-fs-backup' | 'sap-st05-trace' | 'office-integration' | 'intercompany'>('geral');
+  const [showSlideshow, setShowSlideshow] = useState(false);
+  const [searchFilter, setSearchFilter] = useState('');
   const [newPresetName, setNewPresetName] = useState('');
   const [openFilter, setOpenFilter] = useState<string | null>(null);
   const [copied, setCopied] = useState<string | null>(null);
@@ -195,7 +231,7 @@ const SettingsPage: React.FC = () => {
   const presets = {
     'padrao': { name: 'Padrão Mini-SAP', map: { ckm3Mat: 'C', ckm3Custo: 'L', ckm3Centro: 'C', ckm3Desc: 'D', ckm3Categoria: 'G', ckm3CategoriaFiltro: ['Entradas'], ckm3Processo: 'H', ckm3ProcessoFiltro: [], nfCfop: 'H', nfMat: 'K', nfPreco: 'T', nfQtd: 'U', nfFornecedor: 'E', nfCentro: 'C', nfDesc: 'L' } },
     'sap_ecc': { name: 'SAP ECC (Padrão)', map: { ckm3Mat: 'A', ckm3Custo: 'D', ckm3Centro: 'B', ckm3Desc: 'C', ckm3Categoria: 'G', ckm3CategoriaFiltro: ['Entradas'], ckm3Processo: 'H', ckm3ProcessoFiltro: [], nfCfop: 'E', nfMat: 'F', nfPreco: 'G', nfQtd: 'H', nfFornecedor: 'C', nfCentro: 'B', nfDesc: 'D' } },
-    'totvs': { name: 'TOTVS Protheus', map: { ckm3Mat: 'B', ckm3Custo: 'E', ckm3Centro: 'A', ckm3Desc: 'C', ckm3Categoria: 'G', ckm3CategoriaFiltro: ['Entradas'], ckm3Processo: 'H', ckm3ProcessoFiltro: [], nfCfop: 'C', nfMat: 'D', nfPreco: 'F', nfQtd: 'G', nfFornecedor: 'A', nfCentro: 'B', nfDesc: 'E' } }
+    'enterprise': { name: 'Enterprise ERP (Protheus Layout)', map: { ckm3Mat: 'B', ckm3Custo: 'E', ckm3Centro: 'A', ckm3Desc: 'C', ckm3Categoria: 'G', ckm3CategoriaFiltro: ['Entradas'], ckm3Processo: 'H', ckm3ProcessoFiltro: [], nfCfop: 'C', nfMat: 'D', nfPreco: 'F', nfQtd: 'G', nfFornecedor: 'A', nfCentro: 'B', nfDesc: 'E' } }
   };
 
   const applyPreset = (map: any) => {
@@ -542,87 +578,262 @@ const SettingsPage: React.FC = () => {
         </div>
       </header>
 
-      {/* Reorganized Navigation Tabs */}
-      <div className={`flex flex-wrap items-center gap-2 p-1.5 rounded-2xl border ${darkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-gray-200 shadow-sm'}`}>
-        <button
-          onClick={() => setActiveTab('geral')}
-          className={`flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm transition-all ${activeTab === 'geral' ? 'bg-[#8DC63F] text-slate-950 shadow-md' : darkMode ? 'text-slate-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'}`}
-        >
-          <SettingsIcon className="w-4 h-4" /> Geral & Módulos
-        </button>
-        <button
-          onClick={() => setActiveTab('mapeamento')}
-          className={`flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm transition-all ${activeTab === 'mapeamento' ? 'bg-[#8DC63F] text-slate-950 shadow-md' : darkMode ? 'text-slate-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'}`}
-        >
-          <LayoutIcon className="w-4 h-4" /> Mapeamento de Colunas
-        </button>
-        <button
-          onClick={() => setActiveTab('tolerancia')}
-          className={`flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm transition-all ${activeTab === 'tolerancia' ? 'bg-[#8DC63F] text-slate-950 shadow-md' : darkMode ? 'text-slate-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'}`}
-        >
-          <Percent className="w-4 h-4" /> Tolerância & CFOPs
-        </button>
-        <button
-          onClick={() => setActiveTab('alertas')}
-          className={`flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm transition-all ${activeTab === 'alertas' ? 'bg-[#8DC63F] text-slate-950 shadow-md' : darkMode ? 'text-slate-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'}`}
-        >
-          <Bell className="w-4 h-4" /> Alertas & Segurança
-        </button>
-        <button
-          onClick={() => setActiveTab('integracoes')}
-          className={`flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm transition-all ${activeTab === 'integracoes' ? 'bg-[#8DC63F] text-slate-950 shadow-md' : darkMode ? 'text-slate-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'}`}
-        >
-          <Globe className="w-4 h-4" /> Integrações & Dados
-        </button>
-        <button
-          onClick={() => setActiveTab('terminal')}
-          className={`flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm transition-all ${activeTab === 'terminal' ? 'bg-[#8DC63F] text-slate-950 shadow-md' : darkMode ? 'text-slate-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'}`}
-        >
-          <Terminal className="w-4 h-4" /> Terminal de Logs
-        </button>
-        <button
-          onClick={() => setActiveTab('idoc')}
-          className={`flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm transition-all ${activeTab === 'idoc' ? 'bg-[#8DC63F] text-slate-950 shadow-md' : darkMode ? 'text-slate-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'}`}
-        >
-          <FileCode className="w-4 h-4" /> Gerador IDoc / BAPI
-        </button>
-        <button
-          onClick={() => setActiveTab('tenants')}
-          className={`flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm transition-all ${activeTab === 'tenants' ? 'bg-[#8DC63F] text-slate-950 shadow-md' : darkMode ? 'text-slate-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'}`}
-        >
-          <Users className="w-4 h-4" /> Gestão Multi-Tenant
-        </button>
-        <button
-          onClick={() => setActiveTab('analytics')}
-          className={`flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm transition-all ${activeTab === 'analytics' ? 'bg-[#8DC63F] text-slate-950 shadow-md' : darkMode ? 'text-slate-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'}`}
-        >
-          <BarChart2 className="w-4 h-4" /> Analytics & BI
-        </button>
-        <button
-          onClick={() => setActiveTab('ai')}
-          className={`flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm transition-all ${activeTab === 'ai' ? 'bg-[#8DC63F] text-slate-950 shadow-md' : darkMode ? 'text-slate-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'}`}
-        >
-          <Cpu className="w-4 h-4" /> Gemini AI Anomaly
-        </button>
-        <button
-          onClick={() => setActiveTab('realtime')}
-          className={`flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm transition-all ${activeTab === 'realtime' ? 'bg-[#8DC63F] text-slate-950 shadow-md' : darkMode ? 'text-slate-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'}`}
-        >
-          <Bell className="w-4 h-4" /> Alertas Real-Time
-        </button>
-        <button
-          onClick={() => setActiveTab('auditlogs')}
-          className={`flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm transition-all ${activeTab === 'auditlogs' ? 'bg-[#8DC63F] text-slate-950 shadow-md' : darkMode ? 'text-slate-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'}`}
-        >
-          <Shield className="w-4 h-4" /> Logs SOX
-        </button>
-        <button
-          onClick={() => setActiveTab('supabase-adv')}
-          className={`flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm transition-all ${activeTab === 'supabase-adv' ? 'bg-[#8DC63F] text-slate-950 shadow-md' : darkMode ? 'text-slate-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'}`}
-        >
-          <Database className="w-4 h-4" /> Supabase Advanced
-        </button>
+      {/* Quick Search Filter Bar */}
+      <div className={`p-4 rounded-2xl border flex flex-col md:flex-row items-center justify-between gap-4 ${darkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-gray-200 shadow-sm'}`}>
+        <div className="relative w-full md:w-96">
+          <Search className="absolute left-3.5 top-3 w-4 h-4 text-slate-400" />
+          <input
+            type="text"
+            placeholder="Filtrar configurações (ex: Rede, S/4HANA, Logs, Office, Receitas)..."
+            value={searchFilter}
+            onChange={(e) => setSearchFilter(e.target.value)}
+            className={`w-full pl-10 pr-4 py-2.5 rounded-xl border text-xs font-medium transition-all ${
+              darkMode 
+                ? 'bg-slate-950 border-slate-800 text-white placeholder-slate-500 focus:border-[#8DC63F]' 
+                : 'bg-slate-50 border-gray-200 text-gray-900 placeholder-gray-400 focus:border-[#78AF32]'
+            }`}
+          />
+        </div>
+        {searchFilter && (
+          <div className="flex items-center gap-2 text-xs">
+            <span className={darkMode ? 'text-slate-400' : 'text-gray-600'}>Filtrando por: <strong className="text-[#8DC63F]">"{searchFilter}"</strong></span>
+            <button
+              onClick={() => setSearchFilter('')}
+              className="px-3 py-1 bg-slate-800 hover:bg-slate-700 text-white rounded-lg text-[10px] font-bold"
+            >
+              Limpar
+            </button>
+          </div>
+        )}
       </div>
+
+      {/* Reorganized Navigation Tabs into Semantic Drawers (Gavetas Lógicas) */}
+      <div className="space-y-4">
+        {/* Drawer 1: ⚙️ Geral & Interface */}
+        <div className={`p-4 rounded-2xl border ${darkMode ? 'bg-slate-900/80 border-slate-800' : 'bg-slate-50 border-gray-200'}`}>
+          <div className="flex items-center gap-2 mb-3">
+            <span className="text-sm font-bold text-[#8DC63F]">⚙️ Geral & Interface</span>
+            <span className={`text-[10px] px-2 py-0.5 rounded-full ${darkMode ? 'bg-slate-800 text-slate-400' : 'bg-gray-200 text-gray-600'}`}>Configurações Básicas e Visualização</span>
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            <button
+              onClick={() => setActiveTab('geral')}
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-xs transition-all ${activeTab === 'geral' ? 'bg-[#8DC63F] text-slate-950 shadow-md' : darkMode ? 'bg-slate-800 text-slate-300 hover:text-white' : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-200'}`}
+            >
+              <SettingsIcon className="w-3.5 h-3.5" /> Geral & Módulos
+            </button>
+            <button
+              onClick={() => setActiveTab('mapeamento')}
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-xs transition-all ${activeTab === 'mapeamento' ? 'bg-[#8DC63F] text-slate-950 shadow-md' : darkMode ? 'bg-slate-800 text-slate-300 hover:text-white' : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-200'}`}
+            >
+              <LayoutIcon className="w-3.5 h-3.5" /> Mapeamento de Colunas
+            </button>
+            <button
+              onClick={() => setActiveTab('tenants')}
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-xs transition-all ${activeTab === 'tenants' ? 'bg-[#8DC63F] text-slate-950 shadow-md' : darkMode ? 'bg-slate-800 text-slate-300 hover:text-white' : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-200'}`}
+            >
+              <Users className="w-3.5 h-3.5" /> Gestão Multi-Tenant
+            </button>
+            <button
+              onClick={() => setActiveTab('ai-models')}
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-xs transition-all ${activeTab === 'ai-models' ? 'bg-[#8DC63F] text-slate-950 shadow-md' : darkMode ? 'bg-slate-800 text-slate-300 hover:text-white' : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-200'}`}
+            >
+              <Cpu className="w-3.5 h-3.5" /> LLMs & Modelos IA
+            </button>
+            <button
+              onClick={() => setShowSlideshow(true)}
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-xs bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-md hover:brightness-110 transition-all`}
+            >
+              <BarChart3 className="w-3.5 h-3.5" /> Modo Apresentação Board
+            </button>
+          </div>
+        </div>
+
+        {/* Drawer 2: 🔗 Integrações & Dados */}
+        <div className={`p-4 rounded-2xl border ${darkMode ? 'bg-slate-900/80 border-slate-800' : 'bg-slate-50 border-gray-200'}`}>
+          <div className="flex items-center gap-2 mb-3">
+            <span className="text-sm font-bold text-blue-400">🔗 Integrações & Dados</span>
+            <span className={`text-[10px] px-2 py-0.5 rounded-full ${darkMode ? 'bg-slate-800 text-slate-400' : 'bg-gray-200 text-gray-600'}`}>Conexões SAP, S/4HANA, Office, Power BI e IDocs</span>
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            <button
+              onClick={() => setActiveTab('sap-conn')}
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-xs transition-all ${activeTab === 'sap-conn' || activeTab === 'sap-s4hana-versions' ? 'bg-[#8DC63F] text-slate-950 shadow-md' : darkMode ? 'bg-slate-800 text-slate-300 hover:text-white' : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-200'}`}
+            >
+              <Server className="w-3.5 h-3.5" /> Conexão S/4HANA
+            </button>
+            <button
+              onClick={() => setActiveTab('supabase-adv')}
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-xs transition-all ${activeTab === 'supabase-adv' ? 'bg-[#8DC63F] text-slate-950 shadow-md' : darkMode ? 'bg-slate-800 text-slate-300 hover:text-white' : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-200'}`}
+            >
+              <Database className="w-3.5 h-3.5" /> Supabase Advanced
+            </button>
+            <button
+              onClick={() => setActiveTab('office-integration')}
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-xs transition-all ${activeTab === 'office-integration' ? 'bg-[#8DC63F] text-slate-950 shadow-md' : darkMode ? 'bg-slate-800 text-slate-300 hover:text-white' : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-200'}`}
+            >
+              <FileSpreadsheet className="w-3.5 h-3.5" /> Office & Power BI
+            </button>
+            <button
+              onClick={() => setActiveTab('sap-reference')}
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-xs transition-all ${activeTab === 'sap-reference' ? 'bg-[#8DC63F] text-slate-950 shadow-md' : darkMode ? 'bg-slate-800 text-slate-300 hover:text-white' : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-200'}`}
+            >
+              <Compass className="w-3.5 h-3.5" /> Navegador SAP (SAP1/Fiori/SE16N)
+            </button>
+            <button
+              onClick={() => setActiveTab('idoc')}
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-xs transition-all ${activeTab === 'idoc' ? 'bg-[#8DC63F] text-slate-950 shadow-md' : darkMode ? 'bg-slate-800 text-slate-300 hover:text-white' : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-200'}`}
+            >
+              <FileCode className="w-3.5 h-3.5" /> Gerador IDoc / BAPI
+            </button>
+            <button
+              onClick={() => setActiveTab('intercompany')}
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-xs transition-all ${activeTab === 'intercompany' ? 'bg-[#8DC63F] text-slate-950 shadow-md' : darkMode ? 'bg-slate-800 text-slate-300 hover:text-white' : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-200'}`}
+            >
+              <Building2 className="w-3.5 h-3.5" /> Intercompany (NetSuite)
+            </button>
+          </div>
+        </div>
+
+        {/* Drawer 3: 🛡️ Segurança, Logs & Auditoria (SOX) */}
+        <div className={`p-4 rounded-2xl border ${darkMode ? 'bg-slate-900/80 border-slate-800' : 'bg-slate-50 border-gray-200'}`}>
+          <div className="flex items-center gap-2 mb-3">
+            <span className="text-sm font-bold text-emerald-400">🛡️ Segurança, Logs & Auditoria (SOX)</span>
+            <span className={`text-[10px] px-2 py-0.5 rounded-full ${darkMode ? 'bg-slate-800 text-slate-400' : 'bg-gray-200 text-gray-600'}`}>Monitoramento, Alertas e Trilha Imutável</span>
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            <button
+              onClick={() => setActiveTab('alertas')}
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-xs transition-all ${activeTab === 'alertas' ? 'bg-[#8DC63F] text-slate-950 shadow-md' : darkMode ? 'bg-slate-800 text-slate-300 hover:text-white' : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-200'}`}
+            >
+              <Bell className="w-3.5 h-3.5" /> Alertas & Segurança
+            </button>
+            <button
+              onClick={() => setActiveTab('realtime')}
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-xs transition-all ${activeTab === 'realtime' ? 'bg-[#8DC63F] text-slate-950 shadow-md' : darkMode ? 'bg-slate-800 text-slate-300 hover:text-white' : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-200'}`}
+            >
+              <Bell className="w-3.5 h-3.5" /> Alertas Real-Time
+            </button>
+            <button
+              onClick={() => setActiveTab('debug-logs')}
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-xs transition-all ${activeTab === 'debug-logs' ? 'bg-[#8DC63F] text-slate-950 shadow-md' : darkMode ? 'bg-slate-800 text-slate-300 hover:text-white' : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-200'}`}
+            >
+              <Terminal className="w-3.5 h-3.5" /> Monitor de Erros (Logs)
+            </button>
+            <button
+              onClick={() => setActiveTab('terminal')}
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-xs transition-all ${activeTab === 'terminal' ? 'bg-[#8DC63F] text-slate-950 shadow-md' : darkMode ? 'bg-slate-800 text-slate-300 hover:text-white' : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-200'}`}
+            >
+              <Terminal className="w-3.5 h-3.5" /> Terminal de Logs
+            </button>
+            <button
+              onClick={() => setActiveTab('auditlogs')}
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-xs transition-all ${activeTab === 'auditlogs' ? 'bg-[#8DC63F] text-slate-950 shadow-md' : darkMode ? 'bg-slate-800 text-slate-300 hover:text-white' : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-200'}`}
+            >
+              <Shield className="w-3.5 h-3.5" /> Logs SOX
+            </button>
+            <button
+              onClick={() => setActiveTab('sap-tickets')}
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-xs transition-all ${activeTab === 'sap-tickets' ? 'bg-[#8DC63F] text-slate-950 shadow-md' : darkMode ? 'bg-slate-800 text-slate-300 hover:text-white' : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-200'}`}
+            >
+              <Ticket className="w-3.5 h-3.5" /> Chamados SOX
+            </button>
+            <button
+              onClick={() => setActiveTab('sap-immutable-audit')}
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-xs transition-all ${activeTab === 'sap-immutable-audit' ? 'bg-[#8DC63F] text-slate-950 shadow-md' : darkMode ? 'bg-slate-800 text-slate-300 hover:text-white' : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-200'}`}
+            >
+              <ShieldCheck className="w-3.5 h-3.5" /> Trilha Imutável (Hash)
+            </button>
+          </div>
+        </div>
+
+        {/* Drawer 4: 💼 Regras de Negócio & Fiscal */}
+        <div className={`p-4 rounded-2xl border ${darkMode ? 'bg-slate-900/80 border-slate-800' : 'bg-slate-50 border-gray-200'}`}>
+          <div className="flex items-center gap-2 mb-3">
+            <span className="text-sm font-bold text-amber-400">💼 Regras de Negócio & Fiscal</span>
+            <span className={`text-[10px] px-2 py-0.5 rounded-full ${darkMode ? 'bg-slate-800 text-slate-400' : 'bg-gray-200 text-gray-600'}`}>Matriz Fiscal, Tolerância e CKM3/PMM</span>
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            <button
+              onClick={() => setActiveTab('sap-tax')}
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-xs transition-all ${activeTab === 'sap-tax' ? 'bg-[#8DC63F] text-slate-950 shadow-md' : darkMode ? 'bg-slate-800 text-slate-300 hover:text-white' : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-200'}`}
+            >
+              <FileSpreadsheet className="w-3.5 h-3.5" /> Matriz Fiscal BR
+            </button>
+            <button
+              onClick={() => setActiveTab('tolerancia')}
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-xs transition-all ${activeTab === 'tolerancia' ? 'bg-[#8DC63F] text-slate-950 shadow-md' : darkMode ? 'bg-slate-800 text-slate-300 hover:text-white' : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-200'}`}
+            >
+              <Percent className="w-3.5 h-3.5" /> Tolerância & CFOPs
+            </button>
+            <button
+              onClick={() => setActiveTab('receitas')}
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-xs transition-all ${activeTab === 'receitas' ? 'bg-[#8DC63F] text-slate-950 shadow-md' : darkMode ? 'bg-slate-800 text-slate-300 hover:text-white' : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-200'}`}
+            >
+              <ScrollText className="w-3.5 h-3.5" /> Receitas de Custos
+            </button>
+            <button
+              onClick={() => setActiveTab('sap-report')}
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-xs transition-all ${activeTab === 'sap-report' ? 'bg-[#8DC63F] text-slate-950 shadow-md' : darkMode ? 'bg-slate-800 text-slate-300 hover:text-white' : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-200'}`}
+            >
+              <Sliders className="w-3.5 h-3.5" /> Relatórios SAP (ALV)
+            </button>
+            <button
+              onClick={() => setActiveTab('sap-dictionary')}
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-xs transition-all ${activeTab === 'sap-dictionary' ? 'bg-[#8DC63F] text-slate-950 shadow-md' : darkMode ? 'bg-slate-800 text-slate-300 hover:text-white' : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-200'}`}
+            >
+              <FileCode className="w-3.5 h-3.5" /> Dicionário SE11
+            </button>
+            <button
+              onClick={() => setActiveTab('sap-audit')}
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-xs transition-all ${activeTab === 'sap-audit' ? 'bg-[#8DC63F] text-slate-950 shadow-md' : darkMode ? 'bg-slate-800 text-slate-300 hover:text-white' : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-200'}`}
+            >
+              <ShieldAlert className="w-3.5 h-3.5" /> FB03, WE02 & SoD
+            </button>
+            <button
+              onClick={() => setActiveTab('sap-st05-trace')}
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-xs transition-all ${activeTab === 'sap-st05-trace' ? 'bg-[#8DC63F] text-slate-950 shadow-md' : darkMode ? 'bg-slate-800 text-slate-300 hover:text-white' : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-200'}`}
+            >
+              <Cpu className="w-3.5 h-3.5" /> Simulador ST05
+            </button>
+          </div>
+        </div>
+
+        {/* Drawer 5: 💾 Backups & Recuperação */}
+        <div className={`p-4 rounded-2xl border ${darkMode ? 'bg-slate-900/80 border-slate-800' : 'bg-slate-50 border-gray-200'}`}>
+          <div className="flex items-center gap-2 mb-3">
+            <span className="text-sm font-bold text-purple-400">💾 Backups & Recuperação</span>
+            <span className={`text-[10px] px-2 py-0.5 rounded-full ${darkMode ? 'bg-slate-800 text-slate-400' : 'bg-gray-200 text-gray-600'}`}>Nuvem, Redes UNC e Local AES-256</span>
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            <button
+              onClick={() => setActiveTab('sap-cloud')}
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-xs transition-all ${activeTab === 'sap-cloud' ? 'bg-[#8DC63F] text-slate-950 shadow-md' : darkMode ? 'bg-slate-800 text-slate-300 hover:text-white' : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-200'}`}
+            >
+              <Cloud className="w-3.5 h-3.5" /> Backup Nuvem
+            </button>
+            <button
+              onClick={() => setActiveTab('sap-local-backup')}
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-xs transition-all ${activeTab === 'sap-local-backup' ? 'bg-[#8DC63F] text-slate-950 shadow-md' : darkMode ? 'bg-slate-800 text-slate-300 hover:text-white' : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-200'}`}
+            >
+              <FolderLock className="w-3.5 h-3.5" /> Backup Local & Rede
+            </button>
+            <button
+              onClick={() => setActiveTab('sap-fs-backup')}
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-xs transition-all ${activeTab === 'sap-fs-backup' ? 'bg-[#8DC63F] text-slate-950 shadow-md' : darkMode ? 'bg-slate-800 text-slate-300 hover:text-white' : 'bg-white text-gray-700 hover:bg-gray-100 border border-gray-200'}`}
+            >
+              <FolderOpen className="w-3.5 h-3.5" /> Backup FileSystem API
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Tab: AI Models & LLM Manager */}
+      {activeTab === 'ai-models' && (
+        <div className={`rounded-2xl border ${darkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-gray-200 shadow-sm'}`}>
+          <AiModelToggleManager darkMode={darkMode} addToast={addToast} />
+        </div>
+      )}
 
       {/* Tab: Geral & Módulos */}
       {activeTab === 'geral' && (
@@ -1666,6 +1877,101 @@ const SettingsPage: React.FC = () => {
         <SupabaseAdvancedManager darkMode={darkMode} addToast={addToast} />
       )}
 
+      {/* Tab: Receitas de Custos & Regras */}
+      {activeTab === 'receitas' && (
+        <RecipesPage />
+      )}
+
+      {/* Tab: Relatórios SAP (ALV) */}
+      {activeTab === 'sap-report' && (
+        <SapReportBuilder darkMode={darkMode} addToast={addToast} allData={resultado?.allFilteredItems || []} />
+      )}
+
+      {/* Tab: Navegador SAP (SAP1/Fiori/SE16N) */}
+      {activeTab === 'sap-reference' && (
+        <SapReferenceLibrary darkMode={darkMode} addToast={addToast} allData={resultado?.allFilteredItems || []} />
+      )}
+
+      {/* Tab: Dicionário SE11 */}
+      {activeTab === 'sap-dictionary' && (
+        <SapDataDictionary darkMode={darkMode} addToast={addToast} />
+      )}
+
+      {/* Tab: FB03, WE02 & SoD */}
+      {activeTab === 'sap-audit' && (
+        <SapAuditHub darkMode={darkMode} addToast={addToast} />
+      )}
+
+      {/* Tab: Monitor de Erros (Logs) */}
+      {activeTab === 'debug-logs' && (
+        <DebugLogMonitor darkMode={darkMode} addToast={addToast} />
+      )}
+
+      {/* Tab: Conexão S/4HANA */}
+      {activeTab === 'sap-conn' && (
+        <SapConnectionManager darkMode={darkMode} addToast={addToast} />
+      )}
+
+      {/* Tab: Analytics & BI */}
+      {activeTab === 'sap-analytics' && (
+        <SapAnalyticsDashboard darkMode={darkMode} />
+      )}
+
+      {/* Tab: Terminal CLI */}
+      {activeTab === 'sap-cli' && (
+        <SapTerminal darkMode={darkMode} addToast={addToast} />
+      )}
+
+      {/* Tab: Chamados SOX */}
+      {activeTab === 'sap-tickets' && (
+        <SapTicketManager darkMode={darkMode} addToast={addToast} />
+      )}
+
+      {/* Tab: Matriz Fiscal BR */}
+      {activeTab === 'sap-tax' && (
+        <BrazilianTaxMatrix darkMode={darkMode} addToast={addToast} />
+      )}
+
+      {/* Tab: Backup Nuvem */}
+      {activeTab === 'sap-cloud' && (
+        <SapCloudExportManager darkMode={darkMode} addToast={addToast} />
+      )}
+
+      {/* Tab: Backup Local & Rede */}
+      {activeTab === 'sap-local-backup' && (
+        <LocalEncryptedBackup darkMode={darkMode} addToast={addToast} />
+      )}
+
+      {/* Tab: Trilha Imutável */}
+      {activeTab === 'sap-immutable-audit' && (
+        <ImmutableAuditLog darkMode={darkMode} addToast={addToast} />
+      )}
+
+      {/* Tab: Conexão S/4HANA */}
+      {activeTab === 'sap-s4hana-versions' && (
+        <SapVersionConnectionManager darkMode={darkMode} addToast={addToast} />
+      )}
+
+      {/* Tab: Backup FileSystem API */}
+      {activeTab === 'sap-fs-backup' && (
+        <FileSystemBackupManager darkMode={darkMode} addToast={addToast} />
+      )}
+
+      {/* Tab: Simulador ST05 */}
+      {activeTab === 'sap-st05-trace' && (
+        <St05TraceSimulator darkMode={darkMode} addToast={addToast} />
+      )}
+
+      {/* Tab: Office & Power BI */}
+      {activeTab === 'office-integration' && (
+        <OfficeIntegrationPage />
+      )}
+
+      {/* Slideshow Modal */}
+      {showSlideshow && (
+        <ExecutiveSlideshowModal darkMode={darkMode} onClose={() => setShowSlideshow(false)} />
+      )}
+
       {/* Hidden DEV Trigger */}
       <button 
         onClick={handleDevAccess}
@@ -1714,6 +2020,11 @@ const SettingsPage: React.FC = () => {
             <p className="mt-4 text-[10px] text-slate-500 uppercase font-black tracking-widest">Aguardando Sensor...</p>
           </div>
         </div>
+      )}
+
+      {/* Tab: Intercompany Consolidation */}
+      {activeTab === 'intercompany' && (
+        <IntercompanyConsolidation darkMode={darkMode} addToast={addToast} />
       )}
 
       <div className={`p-6 rounded-2xl border flex items-center justify-between transition-all ${showSuccess ? (darkMode ? 'bg-emerald-500/10 border-emerald-500/50' : 'bg-emerald-50 border-emerald-200') : (darkMode ? 'bg-[#8DC63F]/5 border-[#8DC63F]/20' : 'bg-green-50 border-green-100')}`}>

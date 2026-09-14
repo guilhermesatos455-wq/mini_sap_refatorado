@@ -36,13 +36,21 @@ import {
 } from 'recharts';
 import { useAudit } from '../context/AuditContext';
 import { useNavigate } from 'react-router-dom';
-import { generateAuditPDF } from '../utils/pdfGenerator';
+import { generateAuditPDF, generateNfCkm3ComparativePDF } from '../utils/pdfGenerator';
 import { generateExecutivePDF } from '../utils/pdfExport';
 import { generateAuditPPT } from '../utils/pptGenerator';
 import { formatAuditRowsForPowerBi, pushDataToPowerBi } from '../services/powerBiService';
 import { motion } from 'framer-motion';
 import { safeLocalStorageSet } from '../utils/storageUtils';
 import SummaryCards from '../components/dashboard/SummaryCards';
+import { BatchStatusDonutChart } from '../components/BatchStatusDonutChart';
+import { WhatIfSimulator } from '../components/WhatIfSimulator';
+import { ExecutiveIntelligenceHub } from '../components/ExecutiveIntelligenceHub';
+import { SoxApprovalModal } from '../components/SoxApprovalModal';
+import { CellAuditTrailViewer } from '../components/CellAuditTrailViewer';
+import { RemediationWorkflow } from '../components/RemediationWorkflow';
+import { ShieldCheck } from 'lucide-react';
+
 import AlertsSection from '../components/dashboard/AlertsSection';
 import StatCard from '../components/dashboard/StatCard';
 import { PainelConciliacao } from '../components/Upload/PainelConciliacao';
@@ -122,6 +130,7 @@ const DashboardPage: React.FC = () => {
   const [suppliersPage, setSuppliersPage] = useState(1);
   const [supplierSearch, setSupplierSearch] = useState('');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const [isSoxModalOpen, setIsSoxModalOpen] = useState(false);
   const suppliersPerPage = 10;
 
   const supplierSummary = useMemo(() => {
@@ -517,6 +526,15 @@ const DashboardPage: React.FC = () => {
             <FileText className="w-4 h-4" /> Exportar PDF
           </button>
           <button 
+            onClick={() => {
+              generateNfCkm3ComparativePDF(resultado?.nfSummary, resultado?.ckm3Summary, resultado?.allFilteredItems);
+              addToast('Relatório PDF Comparativo NF vs CKM3 gerado com sucesso!', 'success');
+            }}
+            className="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold transition-all text-xs shadow-md"
+          >
+            <FileText className="w-4 h-4" /> PDF NF vs CKM3
+          </button>
+          <button 
             onClick={handleExportExecutivePDF}
             className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${darkMode ? 'bg-slate-800 text-emerald-400 hover:bg-slate-700' : 'bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100'}`}
           >
@@ -648,6 +666,7 @@ const DashboardPage: React.FC = () => {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <BatchStatusDonutChart darkMode={darkMode} divergencias={resultado.divergencias} />
         {showFinancialImpact && (
           <Suspense fallback={<ChartSkeleton darkMode={darkMode} />}>
             <SupplierChart 
@@ -837,6 +856,50 @@ const DashboardPage: React.FC = () => {
           </div>
         </div>
       )}
+
+      {/* What-if Simulator & Sox Signature Section */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 pt-4">
+        <div className="lg:col-span-2">
+          <WhatIfSimulator darkMode={darkMode} formatoMoeda={formatoMoeda} />
+        </div>
+        <div className={`p-6 rounded-2xl border shadow-sm ${darkMode ? 'bg-slate-900 border-slate-800' : 'bg-white border-gray-200'} flex flex-col justify-between`}>
+          <div>
+            <h4 className={`font-bold text-sm ${darkMode ? 'text-white' : 'text-gray-900'} flex items-center gap-2 mb-2`}>
+              <ShieldCheck className="w-4 h-4 text-emerald-500" /> Compliance SOX & Aprovação
+            </h4>
+            <p className={`text-xs ${darkMode ? 'text-slate-400' : 'text-gray-600'} mb-4`}>
+              Aplique sua assinatura digital criptografada para certificar o fechamento contábil e gravar o carimbo imutável na auditoria.
+            </p>
+          </div>
+          <button
+            onClick={() => setIsSoxModalOpen(true)}
+            className="w-full py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/20 cursor-pointer"
+          >
+            <ShieldCheck className="w-4 h-4" /> Assinar Parecer SOX
+          </button>
+        </div>
+      </div>
+
+      <div className="space-y-6 pt-4">
+        <ExecutiveIntelligenceHub darkMode={darkMode} divergencias={resultado.divergencias} formatoMoeda={formatoMoeda} />
+        <WhatIfSimulator darkMode={darkMode} formatoMoeda={formatoMoeda} />
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 pt-4">
+        <CellAuditTrailViewer darkMode={darkMode} auditTrail={[
+          { id: 'TR-1', timestamp: new Date().toISOString(), userEmail: 'guilherme.santos@natulab.com.br', action: 'UPDATE_CELL', targetField: 'Preço Unitário (MAT-9921)', oldValue: '45.00', newValue: '48.50', status: 'APPROVED' },
+          { id: 'TR-2', timestamp: new Date(Date.now() - 3600000).toISOString(), userEmail: 'auditor@natulab.com.br', action: 'RECONCILE', targetField: 'Estoque Final CKM3', oldValue: '1240', newValue: '1250', status: 'SUCCESS' }
+        ]} />
+        <RemediationWorkflow darkMode={darkMode} addToast={addToast} />
+      </div>
+
+      <SoxApprovalModal 
+        isOpen={isSoxModalOpen} 
+        onClose={() => setIsSoxModalOpen(false)} 
+        reportTitle="Relatório Executivo CKM3 - Fechamento Trimestral e Reconciliação" 
+        darkMode={darkMode} 
+        addToast={addToast} 
+      />
       
     </div>
   );

@@ -27,6 +27,25 @@ import AccountingSimulatorPage from './pages/AccountingSimulator';
 import CkmMb51SimulatorPage from './pages/CkmMb51Simulator';
 import WebhookAlertsPage from './pages/WebhookAlerts';
 import OfficeIntegrationPage from './pages/OfficeIntegration';
+import SapReportPage from './pages/SapReportPage';
+import StrategicHubPage from './pages/StrategicHubPage';
+import ProductionSuitePage from './pages/ProductionSuitePage';
+import AdvancedCompliancePage from './pages/AdvancedCompliancePage';
+import GlobalEnterprisePage from './pages/GlobalEnterprisePage';
+import EnterpriseControlPage from './pages/EnterpriseControlPage';
+import EnterpriseCompliancePage from './pages/EnterpriseCompliancePage';
+import AdvancedEnterprisePage from './pages/AdvancedEnterprisePage';
+import UnifiedEnterprisePage from './pages/UnifiedEnterprisePage';
+import CloudErpPage from './pages/CloudErpPage';
+import AuditCfoCopilotPage from './pages/AuditCfoCopilotPage';
+import ExecutiveDossierPage from './pages/ExecutiveDossierPage';
+import EnterpriseRiskMatrixPage from './pages/EnterpriseRiskMatrixPage';
+import TaxReformPage from './pages/TaxReformPage';
+import PharmaTraceabilityPage from './pages/PharmaTraceabilityPage';
+import TransferPricingPage from './pages/TransferPricingPage';
+import CostIntelligenceHubPage from './pages/CostIntelligenceHubPage';
+import WarehouseSystemPage from './pages/WarehouseSystemPage';
+import EnterpriseStudioPage from './pages/EnterpriseStudioPage';
 import { getDeviceId } from './utils/deviceUtils';
 import { ShieldAlert } from 'lucide-react';
 import { charmander } from './constants/charmander';
@@ -116,6 +135,25 @@ const App: React.FC = () => {
                       <Route path="ckm-mb51-simulator" element={<CkmMb51SimulatorPage />} />
                       <Route path="webhook-alerts" element={<WebhookAlertsPage />} />
                       <Route path="office-integration" element={<OfficeIntegrationPage />} />
+                      <Route path="sap-report" element={<SapReportPage />} />
+                      <Route path="cost-intelligence" element={<CostIntelligenceHubPage />} />
+                      <Route path="strategic-hub" element={<StrategicHubPage />} />
+                      <Route path="production-suite" element={<ProductionSuitePage />} />
+                      <Route path="advanced-compliance" element={<AdvancedCompliancePage />} />
+                      <Route path="global-enterprise" element={<GlobalEnterprisePage />} />
+                      <Route path="enterprise-control" element={<EnterpriseControlPage />} />
+                      <Route path="enterprise-compliance" element={<EnterpriseCompliancePage />} />
+                      <Route path="advanced-suite" element={<AdvancedEnterprisePage />} />
+                      <Route path="unified-enterprise" element={<UnifiedEnterprisePage />} />
+                      <Route path="cloud-erp" element={<CloudErpPage />} />
+                      <Route path="audit-copilot" element={<AuditCfoCopilotPage />} />
+                      <Route path="executive-dossier" element={<ExecutiveDossierPage />} />
+                      <Route path="risk-matrix" element={<EnterpriseRiskMatrixPage />} />
+                      <Route path="tax-reform" element={<TaxReformPage />} />
+                      <Route path="traceability" element={<PharmaTraceabilityPage />} />
+                      <Route path="transfer-pricing" element={<TransferPricingPage />} />
+                      <Route path="warehouse-system" element={<WarehouseSystemPage />} />
+                      <Route path="studio-mode" element={<EnterpriseStudioPage />} />
                       <Route path="material-dashboard" element={<MaterialDashboardPage />} />
                       <Route path="simulator" element={<PriceSimulatorPage />} />
                       <Route path="ai-analyzer" element={<AIAnalyzerPage />} />

@@ -1,6 +1,6 @@
 {
   "name": "Remix: Meu mini sap web",
-  "description": "Auditoria de notas fiscais de entrada versus relatório CKM3 do SAP com suporte a exportação para GitHub e tutorial completo.",
+  "description": "Auditoria de notas fiscais versus relatório CKM3/MB51 do SAP, Cloud ERP industrial, Simulador da Reforma Tributária (IBS/CBS/Split Payment), Rastreabilidade Serial Farmacêutica (ANVISA SNCM DataMatrix), Gestão de Preços de Transferência (OCDE Lei 14.596), Copilot CFO com Parecer Big Four e Governança SOX/ERM.",
   "requestFramePermissions": [],
   "majorCapabilities": [
     "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"

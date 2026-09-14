@@ -11,12 +11,28 @@ import DesktopIndicator from './DesktopIndicator';
 import SyncStatus from './SyncStatus';
 import { IdleAnimation } from './IdleAnimation';
 import { GuidedTour } from './GuidedTour';
+import { NotificationCenter } from './NotificationCenter';
+import { BlindAuditToggle } from './BlindAuditToggle';
 
 const Layout: React.FC = () => {
-  const { darkMode, isTourOpen, setIsTourOpen, globalSearchQuery, setGlobalSearchQuery } = useAudit();
+  const { darkMode, isTourOpen, setIsTourOpen, globalSearchQuery, setGlobalSearchQuery, isBlindMode, setIsBlindMode, addToast } = useAudit();
   const [showChat, setShowChat] = useState(false);
   const [isIdle, setIsIdle] = useState(false);
+  const searchInputRef = useRef<HTMLInputElement>(null);
   const idleTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Global Keyboard Shortcut: Ctrl+K or Cmd+K to focus search bar
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        searchInputRef.current?.focus();
+        addToast('Busca global ativada via atalho (Ctrl+K)', 'success');
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [addToast]);
 
   const resetIdleTimer = useCallback(() => {
     if (isIdle) {
@@ -77,10 +93,11 @@ const Layout: React.FC = () => {
           <div className="relative flex-1 max-w-xl">
             <Search className={`absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 ${darkMode ? 'text-slate-400' : 'text-gray-400'}`} />
             <input 
+              ref={searchInputRef}
               type="text"
               value={globalSearchQuery}
               onChange={(e) => setGlobalSearchQuery(e.target.value)}
-              placeholder="Pesquisa global: Nota Fiscal, Fornecedor ou Material..."
+              placeholder="Pesquisa global: Nota Fiscal, Fornecedor ou Material... (Ctrl+K)"
               className={`w-full pl-10 pr-10 py-2.5 rounded-2xl text-xs md:text-sm font-medium border transition-all shadow-sm focus:outline-none focus:ring-2 focus:ring-[#8DC63F] ${
                 darkMode 
                   ? 'bg-slate-900 border-slate-800 text-slate-100 placeholder-slate-500' 
@@ -97,13 +114,17 @@ const Layout: React.FC = () => {
               </button>
             )}
           </div>
-          {globalSearchQuery && (
-            <div className="flex items-center gap-2">
-              <span className={`text-xs font-bold px-3 py-2 rounded-xl border ${darkMode ? 'bg-slate-900 border-slate-800 text-[#8DC63F]' : 'bg-emerald-50 border-emerald-200 text-emerald-700'}`}>
-                Filtro Global Ativo
-              </span>
-            </div>
-          )}
+          <div className="flex items-center gap-3">
+            <BlindAuditToggle isBlindMode={isBlindMode} setIsBlindMode={setIsBlindMode} darkMode={darkMode} />
+            <NotificationCenter darkMode={darkMode} addToast={addToast} />
+            {globalSearchQuery && (
+              <div className="flex items-center gap-2">
+                <span className={`text-xs font-bold px-3 py-2 rounded-xl border ${darkMode ? 'bg-slate-900 border-slate-800 text-[#8DC63F]' : 'bg-emerald-50 border-emerald-200 text-emerald-700'}`}>
+                  Filtro Global Ativo
+                </span>
+              </div>
+            )}
+          </div>
         </div>
         <div className="max-w-7xl mx-auto w-full flex-1">
           <Outlet />

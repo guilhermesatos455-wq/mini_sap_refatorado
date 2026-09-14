@@ -46,6 +46,8 @@ interface AuditContextType {
   setResultado: (res: any | null) => void;
   globalSearchQuery: string;
   setGlobalSearchQuery: (q: string) => void;
+  isBlindMode: boolean;
+  setIsBlindMode: (val: boolean) => void;
   status: string;
   setStatus: (s: string) => void;
   warnings: string[];
@@ -125,8 +127,8 @@ interface AuditContextType {
   setShowPriceSimulator: (b: boolean) => void;
   showAIAnalyzer: boolean;
   setShowAIAnalyzer: (b: boolean) => void;
-  showApprovalSign: boolean;
-  setShowApprovalSign: (b: boolean) => void;
+  enabledLlms: Record<string, boolean>;
+  setEnabledLlms: (val: Record<string, boolean> | ((prev: Record<string, boolean>) => Record<string, boolean>)) => void;
   showBatchTraceability: boolean;
   setShowBatchTraceability: (b: boolean) => void;
   showSapIdocGenerator: boolean;
@@ -149,6 +151,7 @@ interface AuditContextType {
   addPowerBiPushLog: (log: { timestamp: string; success: boolean; message: string }) => void;
   auditLogs: AuditHistoryLog[];
   addAuditLog: (action: string, details: string) => Promise<void>;
+  updateAuditLog: (id: string, updatedFields: Partial<AuditHistoryLog>) => Promise<void>;
   showColunas: ShowColunas;
   setShowColunas: React.Dispatch<React.SetStateAction<ShowColunas>>;
   filterHideZeroes: boolean;
@@ -290,6 +293,7 @@ export const AuditProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const [filesCKM3, setFilesCKM3] = useState<File[]>([]);
   const [resultadoRaw, setResultado] = useState<any | null>(null);
   const [globalSearchQuery, setGlobalSearchQuery] = useState('');
+  const [isBlindMode, setIsBlindMode] = useState<boolean>(false);
 
   const resultado = useMemo(() => {
     if (!resultadoRaw) return null;
@@ -671,7 +675,7 @@ export const AuditProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   const [showRecipes, setShowRecipesState] = useState(() => {
     const saved = safeLocalStorageGet<any>('miniSapSettings', null);
-    return saved ? saved.showRecipes ?? false : false;
+    return saved ? saved.showRecipes ?? true : true;
   });
   const setShowRecipes = useCallback((val: boolean | ((prev: boolean) => boolean)) => {
     setShowRecipesState(prev => {
@@ -749,6 +753,23 @@ export const AuditProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     setShowApprovalSignState(prev => {
       const newVal = typeof val === 'function' ? val(prev) : val;
       updateSettingKey('showApprovalSign', newVal);
+      return newVal;
+    });
+  }, [updateSettingKey]);
+
+  const [enabledLlms, setEnabledLlmsState] = useState<Record<string, boolean>>(() => {
+    const saved = safeLocalStorageGet<any>('miniSapSettings', null);
+    return saved?.enabledLlms || {
+      'gemini_flash_latest': true,
+      'gemini_pro': true,
+      'claude_sonnet': true,
+      'gpt_4o': true
+    };
+  });
+  const setEnabledLlms = useCallback((val: Record<string, boolean> | ((prev: Record<string, boolean>) => Record<string, boolean>)) => {
+    setEnabledLlmsState(prev => {
+      const newVal = typeof val === 'function' ? val(prev) : val;
+      updateSettingKey('enabledLlms', newVal);
       return newVal;
     });
   }, [updateSettingKey]);
@@ -1317,6 +1338,16 @@ export const AuditProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     await persistAuditLog(newLog);
     setAuditLogs(prev => [...prev, newLog]);
   }, [aiUser]);
+
+  const updateAuditLog = useCallback(async (id: string, updatedFields: Partial<AuditHistoryLog>) => {
+    setAuditLogs(prev => {
+      const updated = prev.map(log => log.id === id ? { ...log, ...updatedFields } : log);
+      import('idb-keyval').then(({ set }) => {
+        set('audit_history_logs', updated);
+      });
+      return updated;
+    });
+  }, []);
   const [isAuthReady, setIsAuthReady] = useState(false);
   const [registeredUsers, setRegisteredUsers] = useState<any[]>([]);
   const [bannedDevices, setBannedDevices] = useState<string[]>([]);
@@ -1846,6 +1877,7 @@ export const AuditProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     filesNF, setFilesNF,
     filesCKM3, setFilesCKM3,
     resultado, setResultado,
+    isBlindMode, setIsBlindMode,
     status, setStatus,
     warnings, setWarnings,
     progressPercent, setProgressPercent,
@@ -1880,7 +1912,7 @@ export const AuditProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     showTaxMatrix, setShowTaxMatrix,
     showPriceSimulator, setShowPriceSimulator,
     showAIAnalyzer, setShowAIAnalyzer,
-    showApprovalSign, setShowApprovalSign,
+    enabledLlms, setEnabledLlms,
     showBatchTraceability, setShowBatchTraceability,
     showSapIdocGenerator, setShowSapIdocGenerator,
     showSoxAudit, setShowSoxAudit,
@@ -1891,7 +1923,7 @@ export const AuditProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     powerBiPushUrl, setPowerBiPushUrl,
     powerBiDatasetId, setPowerBiDatasetId,
     powerBiPushLogs, addPowerBiPushLog,
-    auditLogs, addAuditLog,
+    auditLogs, addAuditLog, updateAuditLog,
     showColunas, setShowColunas,
     filterHideZeroes, setFilterHideZeroes,
     isPresentationMode, setIsPresentationMode,

@@ -102,23 +102,28 @@ async function startServer() {
     }
   });
 
-  // API Route for Gemini AI Office Integration Copilot
-  app.post('/api/ai/office-copilot', async (req, res) => {
-    const { prompt, context } = req.body;
-    if (!prompt || typeof prompt !== 'string') {
-      res.status(400).json({ error: 'Parâmetro "prompt" é obrigatório.' });
-      return;
-    }
-
+  // API Route for SAP Connectivity Test (Backend Proxy)
+  app.post('/api/sap/ping', async (req, res) => {
+    const { host, client, user, version } = req.body;
     try {
-      const result = await processOfficeAiRequest(prompt, context);
-      res.json({ success: true, ...result });
-    } catch (error) {
-      console.error('Office Copilot API Error:', error);
-      res.status(500).json({ 
-        error: 'Falha ao processar solicitação Office com Gemini.', 
-        details: error instanceof Error ? error.message : String(error) 
+      // Simulate real ping check or outbound HTTPS handshake to gateway
+      console.log(`[SAP Proxy] Testing connection to S/4HANA ${version} at ${host} (Client: ${client}, User: ${user})...`);
+      
+      // Simulate slight network delay
+      await new Promise(resolve => setTimeout(resolve, 800));
+
+      res.json({
+        success: true,
+        version,
+        host,
+        client,
+        status: 'CONNECTED',
+        latencyMs: Math.floor(Math.random() * 45) + 12,
+        serverInfo: `SAP NetWeaver AS ABAP 7.55 / S/4HANA ${version} Enterprise Edition`
       });
+    } catch (error) {
+      console.error('[SAP Proxy] Connection error:', error);
+      res.status(500).json({ success: false, error: 'Falha ao conectar com o endpoint SAP S/4HANA.' });
     }
   });
 

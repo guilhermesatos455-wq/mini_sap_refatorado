@@ -18,7 +18,10 @@ import {
   Layers,
   Info,
   ShieldCheck,
-  Sparkles
+  Sparkles,
+  FileSearch,
+  Database,
+  GitPullRequest
 } from 'lucide-react';
 import { useAudit } from '../context/AuditContext';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -213,6 +216,101 @@ const HelpPage: React.FC = () => {
         'Navegadores Recomendados: Utilize preferencialmente o Google Chrome ou o Microsoft Edge atualizados, que contam com motores V8 otimizados e suporte completo a aceleração de hardware.',
         'Biblioteca SheetJS (XLSX): A leitura e processamento de planilhas complexas ocorrem 100% no navegador. Fechar abas em segundo plano libera memória RAM para o motor.',
         'Filtros por Lote: Utilize o console de filtros ou a filtragem por cabeçalho na tabela para refinar os dados antes de exportar relatórios pesados.'
+      ]
+    },
+    {
+      id: 'enterprise-hub',
+      category: 'tools',
+      title: 'Hub Estratégico (Caixa, Fraudes & Exportação)',
+      icon: <BarChart3 className="w-5 h-5 text-emerald-400" />,
+      description: 'Previsão preditiva de fluxo de caixa, monitoramento de fraudes e exportação executiva.',
+      content: [
+        'Previsão de Caixa: Cruza títulos intercompany e compromissos fiscais para projetar saldos de liquidez em horizontes de 15 a 90 dias.',
+        'Centro de Fraudes: Detecta automaticamente duplicidades de CNPJ, alíquotas de ICMS divergentes e lançamentos fora do horário comercial (ex: 02:45 AM).',
+        'Exportação Executiva: Gera relatórios certificados estilo Big Four em formato PDF executivo ou Excel (.XLSX) com trilha de auditoria e carimbo temporal.'
+      ]
+    },
+    {
+      id: 'production-suite',
+      category: 'tools',
+      title: 'Suíte de Produção (RBAC & Webhooks)',
+      icon: <ShieldCheck className="w-5 h-5 text-purple-400" />,
+      description: 'Controle de acessos baseado em papéis e integração de alertas em tempo real.',
+      content: [
+        'Gestão RBAC: Permite alternar perfis (C-Level, Gerente de Auditoria, Auditor Big Four e Analista Fiscal) para restringir ou liberar funções sensíveis.',
+        'Webhooks Corporativos: Configura endpoints para Slack, Microsoft Teams ou Discord, disparando alertas push imediatos quando anomalias são detectadas.'
+      ]
+    },
+    {
+      id: 'advanced-compliance',
+      category: 'tools',
+      title: 'SoD, Créditos Tributários & Contratos',
+      icon: <ShieldCheck className="w-5 h-5 text-indigo-400" />,
+      description: 'Segregação de funções, recuperação fiscal e conformidade de contratos.',
+      content: [
+        'SoD (Segregação de Funções): Identifica conflitos de transações no SAP (ex: criar fornecedor e liberar pagamento pelo mesmo usuário) para conformidade SOX.',
+        'Recuperação de Créditos: Motor que varre notas fiscais para calcular créditos não cumulativos de PIS/COFINS e ressarcimento de ICMS-ST.',
+        'Conformidade Contratual: Monitora vigências, valores e cumprimento de SLAs de fornecedores e prestadores de serviço com auxílio de IA.'
+      ]
+    },
+    {
+      id: 'global-enterprise',
+      category: 'tools',
+      title: 'JET, ESG & Risco Cambial',
+      icon: <FileSearch className="w-5 h-5 text-teal-400" />,
+      description: 'Auditoria de lançamentos manuais, sustentabilidade e hedge multi-moeda.',
+      content: [
+        'JET (Journal Entry Testing): Varre o razão geral do ERP (SAP/Enterprise) em busca de lançamentos manuais atípicos em fins de semana, valores redondos ou contas sensíveis.',
+        'Auditoria ESG: Monitora e audita a pegada de carbono corporativa nos Escopos 1 (Diretas), 2 (Energia) e 3 (Cadeia de Suprimentos).',
+        'Exposição Cambial (FX Risk): Simula estresses de volatilidade cambial (USD/EUR) sobre passivos e dívidas intercompany.'
+      ]
+    },
+    {
+      id: 'enterprise-control',
+      category: 'tools',
+      title: 'Governança & Controle Executivo',
+      icon: <ShieldCheck className="w-5 h-5 text-emerald-400" />,
+      description: 'Stress test para diretoria, hash criptográfico SOX e despacho de alertas.',
+      content: [
+        'Stress Test Executivo: Simula cenários macroeconômicos extremos (Dólar, Selic, Choques) e projeta impacto financeiro para o conselho de administração.',
+        'Certificação de Trilha SOX: Gera hash criptográfico SHA-256 imutável para attestation de controles internos exigidos por auditorias Big Four.',
+        'Despacho Automático: Conecta motores de risco diretamente a canais Slack/Teams para notificações instantâneas.'
+      ]
+    },
+    {
+      id: 'enterprise-compliance',
+      category: 'tools',
+      title: 'Enterprise & Compliance Fiscal LATAM',
+      icon: <Database className="w-5 h-5 text-orange-400" />,
+      description: 'Conformidade fiscal brasileira/LATAM, simulador de rotinas e arquitetura híbrida.',
+      content: [
+        'Conformidade Fiscal LATAM & SPED: Validação de SPED Fiscal (EFD ICMS-IPI) por estado (SP, RJ, MG, RS) com regras de ICMS, ST e Difal.',
+        'Simulador de Rotinas & Dicionário: Ambiente para testar e validar rotinas padrão de entrada/saída de notas e dicionários de dados.',
+        'Arquitetura Híbrida: Monitoramento de sincronismo entre bases On-Premise e serviços Cloud Enterprise.'
+      ]
+    },
+    {
+      id: 'advanced-suite',
+      category: 'tools',
+      title: 'Suíte Avançada & Custo Médio',
+      icon: <GitPullRequest className="w-5 h-5 text-orange-400" />,
+      description: 'Portal de aprovação workflow, inspetor de dicionário de dados e recálculo de custo médio.',
+      content: [
+        'Workflow de Aprovação: Central de aprovação de alçadas dinâmicas para pedidos de compras, títulos vencidos e homologações de fornecedores.',
+        'Inspetor de Dicionário: Visualização estruturada de tabelas e campos de ERP (SF1, SE1, etc.) com tipos, tamanhos e descrições.',
+        'Custo Médio Enterprise: Ferramenta de recálculo de fechamento de estoque por filial e competência, conciliando saldos com a contabilidade.'
+      ]
+    },
+    {
+      id: 'unified-enterprise',
+      category: 'tools',
+      title: 'Suíte Unificada Enterprise (Agendamento, IA & Trilha Global)',
+      icon: <Cpu className="w-5 h-5 text-indigo-400" />,
+      description: 'Agendador de relatórios SOX, dashboard de alertas preditivos por IA e linha do tempo global unificada.',
+      content: [
+        'Agendador SOX Automático: Configuração de tarefas cron recorrentes para envio de pacotes de auditoria executiva por e-mail.',
+        'Alertas Preditivos por IA: Varredura contínua de riscos operacionais e desvios de preço médio (CKM3) com escore de criticidade.',
+        'Trilha Global Unificada: Histórico cronológico consolidado de todas as alterações fiscais, contábeis e de governança do sistema.'
       ]
     }
   ];
